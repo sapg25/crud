@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Editar Guardia - Tienda</title>
@@ -13,16 +14,19 @@
             font-family: Arial, sans-serif;
             background-color: #f4f7f6;
         }
+
         .container {
             background: white;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             text-align: center;
             width: 100%;
             max-width: 400px;
         }
-        input, select {
+
+        input,
+        select {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -31,6 +35,7 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
+
         button {
             background-color: #ffc107;
             color: black;
@@ -42,9 +47,11 @@
             font-size: 16px;
             font-weight: bold;
         }
+
         button:hover {
             background-color: #e0a800;
         }
+
         .btn-regresar {
             display: inline-block;
             margin-top: 15px;
@@ -56,15 +63,52 @@
             width: 100%;
             box-sizing: border-box;
         }
+
+        .btn-theme {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            background: #493bde;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        body.dark-mode .container {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+
+        body.dark-mode input,
+        body.dark-mode select {
+            background-color: #444;
+            color: white;
+            border: 1px solid #666;
+        }
     </style>
 </head>
-<body>
 
+<body>
+    <button id="theme-toggle" class="btn-theme">🌙</button>
     <div class="container">
         <h1>Editar Datos del Guardia</h1>
 
         <form action="{{ route('guardias.update', $guardia->id) }}" method="POST">
-            @csrf 
+            @csrf
             @method('PUT') <label>Nombre</label>
             <input type="text" name="nombre" value="{{ $guardia->nombre }}" required>
 
@@ -88,6 +132,24 @@
             Cancelar y volver a la lista
         </a>
     </div>
+    <script>
+        const btn = document.getElementById('theme-toggle');
+        const body = document.body;
 
+        // 1. Cargar preferencia guardada en el navegador
+        if (localStorage.getItem('dark-mode') === 'enabled') {
+            body.classList.add('dark-mode');
+            btn.innerText = '☀️';
+        }
+
+        // 2. Evento de clic para cambiar el tema
+        btn.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            localStorage.setItem('dark-mode', isDark ? 'enabled' : 'disabled');
+            btn.innerText = isDark ? '☀️' : '🌙';
+        });
+    </script>
 </body>
+
 </html>

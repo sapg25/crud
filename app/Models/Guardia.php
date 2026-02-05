@@ -9,5 +9,5 @@ class Guardia extends Model
 public function items() {
     return $this->hasMany(Item::class);    
 }
-protected $fillable = ['nombre', 'apellido', 'cedula', 'turno'];
+protected $fillable = ['nombre', 'apellido', 'cedula', 'turno', 'tipo_documento', 'codigo_unico'];
 }
