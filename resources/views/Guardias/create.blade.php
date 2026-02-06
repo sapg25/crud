@@ -3,316 +3,416 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Registrar Guardia</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Contenedor que envuelve ambos cuadros */
-        .flex-container {
-            display: flex;
-            flex-direction: row;
-            /* Alineación horizontal */
-            gap: 20px;
-            /* Espacio entre los dos cuadros */
-            justify-content: center;
-            align-items: flex-start;
-            /* Alinea los cuadros por la parte superior */
-            width: 100%;
-            max-width: 900px;
-            /* Aumentamos el ancho total para que quepan ambos */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Ajuste para que los cuadros no se vean tan grandes individualmente */
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            /* Tamaño fijo para cada cuadro */
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
         }
 
-        /* Responsivo: Si la pantalla es pequeña (celular), se ponen uno debajo del otro */
-        @media (max-width: 800px) {
-            .flex-container {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-
-        select,
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-            /* Evita que se salga del contenedor */
-        }
-
-        /* Ajuste para modo oscuro */
-        body.dark-mode select,
-        body.dark-mode input[type="text"] {
-            background-color: #444;
-            color: white;
-            border: 1px solid #666;
-        }
-
-        /* Botón de cambio de tema */
-        .btn-theme {
+        .theme-toggle {
             position: fixed;
             top: 20px;
-            left: 20px;
-            width: 45px;
-            /* Ancho fijo */
-            height: 45px;
-            /* Alto fijo */
+            right: 20px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            /* Lo hace circular */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            cursor: pointer;
             background: #493bde;
             color: white;
-            font-size: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            transition: transform 0.2s ease;
+            transition: transform 0.3s ease;
         }
 
-        .btn-theme:hover {
+        .theme-toggle:hover {
             transform: scale(1.1);
-            /* Efecto de aumento al pasar el mouse */
         }
 
-        /* Variables para Modo Oscuro */
-        body.dark-mode {
-            background-color: #1a1a1a;
-            color: #ffffff;
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        body.dark-mode .container {
+        body.dark-mode .page-header {
+            background: rgba(45, 45, 45, 0.95);
+            color: #fff;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .card {
             background-color: #2d2d2d;
-            color: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-        }
-
-        body.dark-mode table,
-        body.dark-mode th,
-        body.dark-mode td {
+            color: #fff;
             border-color: #444;
         }
 
-        body.dark-mode td {
-            color: #eee;
-        }
-
-        body.dark-mode tr:nth-child(even) {
-            background-color: #383838;
-        }
-
-        body.dark-mode h1 {
-            color: #ffffff;
-        }
-
-        /* Estilo para centrar todo en la pantalla */
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-        }
-
-        .container {
-            background: white;
-            padding: 30px;
+        .form-control, .form-select {
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            /* Centra el texto y los botones */
-            width: 100%;
-            max-width: 400px;
+            border: 2px solid #ddd;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        input,
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            /* Evita que el input se salga del cuadro */
+        .form-control:focus, .form-select:focus {
+            border-color: #493bde;
+            box-shadow: 0 0 10px rgba(73, 59, 222, 0.3);
         }
 
-        button {
-            background-color: #28a745;
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background-color: #444;
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
+            border-color: #666;
         }
 
-        button:hover {
-            background-color: #218838;
+        body.dark-mode .form-control:focus,
+        body.dark-mode .form-select:focus {
+            background-color: #555;
+            border-color: #493bde;
         }
 
-        .btn-consultar {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px;
-            background: #493bde;
-            color: white;
-            text-decoration: none;
+        #items-table {
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
+        #items-table thead {
+            background-color: #333 !important;
+        }
+
+        #items-table th {
+            background-color: #333 !important;
+            color: #fff !important;
+            font-weight: 600;
+            border: 1px solid #555;
+        }
+
+        #items-table td {
+            border: 1px solid #ddd;
+            color: #000;
+            padding: 12px;
+        }
+
+        #items-table tr {
+            border-bottom: 1px solid #ddd;
+        }
+
+        body.dark-mode #items-table {
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+        }
+
+        body.dark-mode #items-table thead {
+            background-color: #333 !important;
+        }
+
+        body.dark-mode #items-table th {
+            background-color: #333 !important;
+            color: #fff !important;
+            font-weight: 600;
+            border: 1px solid #555;
+            text-transform: none;
+        }
+
+        body.dark-mode #items-table tbody tr {
+            background-color: #2d2d2d;
+            color: #fff;
+            border-bottom: 1px solid #444;
+        }
+
+        body.dark-mode #items-table td {
+            color: #fff;
+            border: 1px solid #555;
+            padding: 12px;
+        }
+
+        body.dark-mode #items-table .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        body.dark-mode #items-table code {
+            background-color: #444;
+            color: #fff;
+            padding: 4px 8px;
             border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box;
+        }
+
+        /* Asegurar que todo sea visible en modo oscuro */
+        body.dark-mode .table {
+            color: #fff;
+        }
+
+        body.dark-mode .table td {
+            color: #fff !important;
+        }
+
+        body.dark-mode .table th {
+            color: #fff !important;
+            background-color: #333 !important;
+        }
+
+        body.dark-mode .table tbody tr {
+            color: #fff;
+        }
+
+        body.dark-mode .table tbody tr td {
+            color: #fff !important;
+            background-color: transparent !important;
+        }
+
+        .section-title {
+            border-bottom: 3px solid #493bde;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            color: #493bde;
+        }
+
+        body.dark-mode .section-title {
+            color: #667eea;
         }
 
         .alert {
-            padding: 15px;
-            background-color: #d4edda;
-            color: #155724;
-            margin-bottom: 20px;
-            border: 1px solid #c3e6cb;
-            border-radius: 4px;
+            border-radius: 8px;
+            border: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #493bde;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #6f42c1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(73, 59, 222, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+
+        .badge-custom {
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
     </style>
 </head>
 
 <body>
-    <button id="theme-toggle" class="btn-theme">🌙</button>
+    <button class="theme-toggle" id="theme-toggle">🌙</button>
 
-    <div class="flex-container">
-        <!-- SECCIÓN IZQUIERDA: REGISTRO DE GUARDIA -->
-        <div class="container">
-            @if (session('success'))
-                <div class="alert">
-                    {{ session('success') }}
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container-lg">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="mb-2">
+                        <i class="fas fa-user-plus"></i> Registrar Nuevo Guardia
+                    </h1>
+                    <p class="text-muted mb-0">Complete el formulario para registrar un guardia en el sistema</p>
                 </div>
-            @endif
-
-            <h1>Registrar Guardia</h1>
-
-            <form action="{{ route('guardias.store') }}" method="POST" id="form-guardia">
-                @csrf
-
-                <label>Nombre</label>
-                <input type="text" name="nombre" placeholder="Ej: Rafael" required>
-
-                <label>Apellido</label>
-                <input type="text" name="apellido" placeholder="Ej: Bermeo" required>
-
-                <label for="tipo_documento">Tipo de Documento</label>
-                <select name="tipo_documento" id="tipo_documento" class="form-control">
-                    <option value="cedula">Cédula</option>
-                    <option value="pasaporte">Pasaporte</option>
-                    <option value="otro">Otro</option>
-                </select>
-
-                <label for="cedula">Número de Documento</label>
-                <input type="text" name="cedula" id="cedula" placeholder="Ej: 09XXXXXXXX o PAS12345"
-                    maxlength="10" oninput="validarDocumento(this)" style="text-transform: uppercase;" required>
-
-                <script>
-                    function validarDocumento(input) {
-                        // 1. Solo permite letras y números (quita símbolos o espacios)
-                        input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
-
-                        // 2. Convierte todo a mayúsculas automáticamente
-                        input.value = input.value.toUpperCase();
-                    }
-                </script>
-                <label>Turno</label>
-                <select name="turno">
-                    <option value="Mañana">Mañana</option>
-                    <option value="Tarde">Tarde</option>
-                    <option value="Noche">Noche</option>
-                </select>
-            </form>
-
-            <a href="{{ route('guardias.index') }}" class="btn-consultar">
-                Consultar lista de guardias
-            </a>
-        </div>
-
-        <!-- SECCIÓN DERECHA: EQUIPAMIENTO -->
-        <div class="container">
-            <h3>Equipamiento Obligatorio</h3>
-            <p style="font-size: 0.9em; color: #666;">Selecciona al menos un ítem del inventario.</p>
-
-            @if($inventarioItems->count() > 0)
-                <div style="margin-bottom: 15px;">
-                    <label for="inventario-select" style="display: block; margin-bottom: 8px; font-weight: bold;">Seleccionar Ítem del Inventario:</label>
-                    <select id="inventario-select" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                        <option value="">-- Selecciona un ítem --</option>
-                        @foreach($inventarioItems as $item)
-                            <option value="{{ $item->id }}">{{ $item->nombre }} ({{ $item->cantidad }} disponibles)</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <table id="items-table" style="width: 100%; border-collapse: collapse; margin-bottom: 20px; display: none;">
-                    <thead>
-                        <tr style="background-color: #f5f5f5; border-bottom: 2px solid #ddd;">
-                            <th style="padding: 10px; text-align: left; font-weight: bold;">Ítem</th>
-                            <th style="padding: 10px; text-align: left; font-weight: bold;">Código</th>
-                            <th style="padding: 10px; text-align: center; width: 60px; font-weight: bold;">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="items-tbody">
-                    </tbody>
-                </table>
-
-                <button type="button" id="add-item-btn"
-                    style="background-color: #493bde; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 20px;">
-                    + Agregar Ítem Seleccionado
-                </button>
-
-                <button type="submit" form="form-guardia"
-                    style="background-color: #28a745; color: white; font-weight: bold; width: 100%; padding: 12px;">
-                    Guardar Registro Completo
-                </button>
-            @else
-                <div style="padding: 20px; background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404;">
-                    <strong>⚠️ No hay equipamiento disponible</strong><br>
-                    No hay items en el inventario con cantidad disponible. Por favor, agrega items al inventario primero.
-                </div>
-            @endif
+            </div>
         </div>
     </div>
+
+    <!-- Main Content -->
+    <div class="container-lg mb-5">
+        <div class="row g-4">
+            <!-- Left Column: Formulario de Guardia -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h2 class="section-title">
+                            <i class="fas fa-info-circle"></i> Datos del Guardia
+                        </h2>
+
+                        @if (session('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle"></i> {{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
+
+                        @if (session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
+
+                        <form action="{{ route('guardias.store') }}" method="POST" id="form-guardia">
+                            @csrf
+
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">
+                                    <i class="fas fa-user"></i> Nombre
+                                </label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" 
+                                    placeholder="Ej: Rafael" required value="{{ old('nombre') }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="apellido" class="form-label">
+                                    <i class="fas fa-user"></i> Apellido
+                                </label>
+                                <input type="text" class="form-control" id="apellido" name="apellido" 
+                                    placeholder="Ej: Bermeo" required value="{{ old('apellido') }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="tipo_documento" class="form-label">
+                                    <i class="fas fa-id-card"></i> Tipo de Documento
+                                </label>
+                                <select name="tipo_documento" id="tipo_documento" class="form-select" required>
+                                    <option value="cedula">Cédula</option>
+                                    <option value="pasaporte">Pasaporte</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="cedula" class="form-label">
+                                    <i class="fas fa-card-id"></i> Cédula/Documento
+                                </label>
+                                <input type="text" class="form-control" id="cedula" name="cedula" 
+                                    placeholder="Ej: 09XXXXXXXX" required value="{{ old('cedula') }}">
+                                <small class="text-muted">Solo números para cédula, alfanumérico para pasaporte</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="turno" class="form-label">
+                                    <i class="fas fa-clock"></i> Turno
+                                </label>
+                                <select name="turno" id="turno" class="form-select">
+                                    <option value="Mañana">Mañana</option>
+                                    <option value="Tarde">Tarde</option>
+                                    <option value="Noche">Noche</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Asignación de Items -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h2 class="section-title">
+                            <i class="fas fa-shopping-cart"></i> Equipamiento
+                        </h2>
+
+                        @if ($inventarioItems->isEmpty())
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i> <strong>Sin disponibilidad</strong><br>
+                                No hay equipamiento disponible. Por favor, agrega items al inventario.
+                            </div>
+                        @else
+                            <div class="mb-3">
+                                <label for="inventario-select" class="form-label">
+                                    <i class="fas fa-list"></i> Seleccionar Equipamiento
+                                </label>
+                                <select id="inventario-select" class="form-select">
+                                    <option value="">-- Selecciona un ítem --</option>
+                                    @foreach($inventarioItems as $item)
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->nombre }} 
+                                            <span class="badge badge-custom bg-success">{{ $item->cantidad }} disponibles</span>
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <button type="button" id="add-item-btn" class="btn btn-success w-100 mb-3">
+                                <i class="fas fa-plus"></i> Agregar Equipamiento
+                            </button>
+
+                            <div class="table-responsive">
+                                <table id="items-table" class="table table-sm table-hover mb-0" style="display: none;">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th><i class="fas fa-box"></i> Ítem</th>
+                                            <th><i class="fas fa-cubes"></i> Origen</th>
+                                            <th class="text-center" style="width: 90px;">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="items-tbody"></tbody>
+                                </table>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="mt-3 d-grid gap-2 d-sm-flex">
+                    <button type="submit" form="form-guardia" class="btn btn-primary btn-lg" id="submit-btn">
+                        <i class="fas fa-save"></i> Registrar Guardia
+                    </button>
+                    <button type="reset" form="form-guardia" class="btn btn-warning btn-lg text-dark">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <a href="{{ route('guardias.index') }}" class="btn btn-info btn-lg">
+                        <i class="fas fa-list"></i> Consultar Guardias
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const btn = document.getElementById('theme-toggle');
         const body = document.body;
         let items = [];
 
-        // Función para permitir letras y números (Pasaporte/Cédula)
-        function validarDocumento(input) {
-            const tipoDoc = document.getElementById('tipo_documento').value;
-
-            if (tipoDoc === 'cedula') {
-                input.value = input.value.replace(/[^0-9]/g, '');
-            } else {
-                input.value = input.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-            }
-        }
-
-        // Limpiar el campo si el usuario cambia el tipo de documento
-        document.getElementById('tipo_documento').addEventListener('change', function() {
-            document.getElementById('cedula').value = '';
-            document.getElementById('cedula').placeholder = this.value === 'cedula' ? 'Ej: 09XXXXXXXX' : 'Ej: ABC12345';
-        });
-
-        // Lógica del Modo Oscuro
+        // Modo Oscuro
         if (localStorage.getItem('dark-mode') === 'enabled') {
             body.classList.add('dark-mode');
             btn.innerText = '☀️';
@@ -320,33 +420,43 @@
 
         btn.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('dark-mode', 'enabled');
-                btn.innerText = '☀️';
-            } else {
-                localStorage.setItem('dark-mode', 'disabled');
-                btn.innerText = '🌙';
-            }
+            const isDark = body.classList.contains('dark-mode');
+            localStorage.setItem('dark-mode', isDark ? 'enabled' : 'disabled');
+            btn.innerText = isDark ? '☀️' : '🌙';
         });
 
-        // Lógica para agregar items del inventario
+        // Validar documento
+        document.getElementById('tipo_documento').addEventListener('change', function() {
+            document.getElementById('cedula').value = '';
+            document.getElementById('cedula').placeholder = this.value === 'cedula' ? 'Ej: 09XXXXXXXX' : 'Ej: ABC12345';
+        });
+
+        function validarDocumento(input) {
+            const tipoDoc = document.getElementById('tipo_documento').value;
+            if (tipoDoc === 'cedula') {
+                input.value = input.value.replace(/[^0-9]/g, '');
+            } else {
+                input.value = input.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            }
+        }
+
+        // Funcionalidad de agregar items
         const addBtn = document.getElementById('add-item-btn');
         if (addBtn) {
             addBtn.addEventListener('click', function() {
                 const select = document.getElementById('inventario-select');
                 const itemId = select.value;
                 const selectedOption = select.options[select.selectedIndex];
+                const itemText = selectedOption.text;
+                
+                // Extraer solo el nombre del item (quita el badge)
+                const nombre = itemText.split(/\s+disponible/)[0].trim();
 
                 if (!itemId) {
                     alert('Por favor selecciona un ítem');
                     return;
                 }
 
-                // Extraer nombre y cantidad del texto de la opción
-                const text = selectedOption.text;
-                const nombre = text.substring(0, text.indexOf('(')).trim();
-
-                // Verificar si ya está agregado
                 if (items.find(i => i.id == itemId)) {
                     alert('Este ítem ya está agregado');
                     return;
@@ -365,14 +475,13 @@
             const rowIndex = items.length - 1;
 
             const row = document.createElement('tr');
-            row.style.borderBottom = '1px solid #ddd';
+            row.style.color = '#fff'; // Asegurar que el texto sea blanco en modo oscuro
             row.innerHTML = `
-                <td style="padding: 10px;">${nombre}</td>
-                <td style="padding: 10px;">Del Inventario</td>
-                <td style="padding: 10px; text-align: center;">
-                    <button type="button" class="btn-delete" data-index="${rowIndex}"
-                        style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px;">
-                        Eliminar
+                <td style="color: #fff !important;"><strong>${nombre || 'Sin nombre'}</strong></td>
+                <td style="color: #fff !important;"><code>Del Inventario</code></td>
+                <td class="text-center" style="color: #fff !important;">
+                    <button type="button" class="btn-delete btn btn-sm btn-danger" data-index="${rowIndex}">
+                        <i class="fas fa-trash"></i> Eliminar
                     </button>
                 </td>
             `;
@@ -397,7 +506,8 @@
             tbody.deleteRow(index);
 
             if (items.length === 0) {
-                document.getElementById('items-table').style.display = 'none';
+                const table = document.getElementById('items-table');
+                table.style.display = 'none';
             }
 
             updateHiddenInputs();
@@ -405,63 +515,53 @@
 
         function updateHiddenInputs() {
             const form = document.getElementById('form-guardia');
-
-            // Remove all previously added hidden inputs (to avoid duplicates)
             const oldInputs = form.querySelectorAll('input[name^="items"]');
             oldInputs.forEach(input => input.remove());
 
-            // Add new hidden inputs directly to the form
             items.forEach((item, index) => {
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = `items[${index}]`;
                 input.value = item.id;
-
-                // Append directly to the form element
                 form.appendChild(input);
             });
         }
 
-        // Validar que haya al menos un item antes de enviar
-        const form = document.getElementById('form-guardia');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                if (items.length === 0) {
-                    e.preventDefault();
-                    alert('Debe asignar al menos un ítem');
-                    return false;
-                }
-            });
-        }
+        // Validar que haya al menos un item
+        document.getElementById('submit-btn').addEventListener('click', function(e) {
+            if (items.length === 0) {
+                e.preventDefault();
+                alert('Debe asignar al menos un ítem');
+                return false;
+            }
+        });
 
-        // Limpiar formulario si hay mensaje de éxito
-        const alertElement = document.querySelector('.alert');
+        // Limpiar formulario cuando se hace clic en reset (Cancelar)
+        document.getElementById('form-guardia').addEventListener('reset', function() {
+            items = [];
+            const tbody = document.getElementById('items-tbody');
+            if (tbody) tbody.innerHTML = '';
+            const table = document.getElementById('items-table');
+            if (table) table.style.display = 'none';
+            const select = document.getElementById('inventario-select');
+            if (select) select.value = '';
+        });
+
+        // Limpiar formulario después de éxito
+        const alertElement = document.querySelector('.alert-success');
         if (alertElement) {
             setTimeout(() => {
-                // Limpiar campos de texto
                 document.querySelectorAll('input[type="text"]').forEach(input => {
                     input.value = '';
                 });
-
-                // Resetear selects
                 document.querySelectorAll('select').forEach(select => {
                     select.selectedIndex = 0;
                 });
-
-                // Limpiar items agregados
                 items = [];
                 const tbody = document.getElementById('items-tbody');
-                if (tbody) {
-                    tbody.innerHTML = '';
-                }
+                if (tbody) tbody.innerHTML = '';
                 const table = document.getElementById('items-table');
-                if (table) {
-                    table.style.display = 'none';
-                }
-
-                // Limpiar inputs hidden
-                const oldInputs = form.querySelectorAll('input[name^="items"]');
-                oldInputs.forEach(input => input.remove());
+                if (table) table.style.display = 'none';
             }, 1500);
         }
     </script>

@@ -4,453 +4,345 @@
 <head>
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Detalles - {{ $guardia->nombre }} {{ $guardia->apellido }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Botón de cambio de tema */
-        .btn-theme {
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+        }
+
+        .theme-toggle {
             position: fixed;
             top: 20px;
-            left: 20px;
-            padding: 10px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            border: none;
-            cursor: pointer;
             background: #493bde;
             color: white;
-            font-size: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             z-index: 1000;
+            transition: transform 0.3s ease;
         }
 
-        /* Variables para Modo Oscuro */
-        body.dark-mode {
-            background-color: #1a1a1a;
-            color: #ffffff;
+        .theme-toggle:hover {
+            transform: scale(1.1);
         }
 
-        body.dark-mode .container {
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .page-header {
+            background: rgba(45, 45, 45, 0.95);
+            color: #fff;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        body.dark-mode .card {
             background-color: #2d2d2d;
-            color: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-        }
-
-        body.dark-mode table,
-        body.dark-mode th,
-        body.dark-mode td {
+            color: #fff;
             border-color: #444;
-        }
-
-        body.dark-mode td {
-            color: #eee;
-        }
-
-        body.dark-mode tr:nth-child(even) {
-            background-color: #383838;
-        }
-
-        body.dark-mode h1,
-        body.dark-mode h2 {
-            color: #ffffff;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 900px;
-            margin-bottom: 20px;
-        }
-
-        .info-box {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            border-left: 4px solid #493bde;
-            margin-bottom: 20px;
         }
 
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .info-item {
-            display: flex;
-            flex-direction: column;
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #493bde;
+        }
+
+        body.dark-mode .info-item {
+            background: #333;
+            border-left-color: #667eea;
         }
 
         .info-label {
-            font-weight: bold;
-            color: #493bde;
-            font-size: 0.9em;
-            margin-bottom: 5px;
-        }
-
-        .info-value {
-            font-size: 1.1em;
-            color: #333;
-        }
-
-        .badge-id {
-            display: inline-block;
-            background: #493bde;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        th {
-            background-color: #493bde;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        .btn-regresar {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #28a745;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .btn-regresar:hover {
-            background: #218838;
-        }
-
-        .btn-editar {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #ffc107;
-            color: black;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        .btn-editar:hover {
-            background: #e0a800;
-        }
-
-        .btn-eliminar {
-            background: #dc3545;
-            border: none;
-            cursor: pointer;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        .btn-eliminar:hover {
-            background: #c82333;
-        }
-
-        .alert {
-            padding: 15px;
-            background-color: #d4edda;
-            color: #155724;
-            margin-bottom: 20px;
-            border: 1px solid #c3e6cb;
-            border-radius: 4px;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .no-items {
-            text-align: center;
-            padding: 30px;
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
             color: #666;
-            font-style: italic;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .btn-agregar {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #493bde;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        .btn-agregar:hover {
-            background: #3a2ba8;
-        }
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 500px;
-        }
-
-        body.dark-mode .modal-content {
-            background-color: #2d2d2d;
-            color: #ffffff;
-        }
-
-        .modal-header {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-        }
-
-        body.dark-mode .modal-close {
+        body.dark-mode .info-label {
             color: #aaa;
         }
 
-        .modal-body select {
-            width: 100%;
-            padding: 10px;
-            margin: 15px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        .info-value {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a1a1a;
         }
 
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
+        body.dark-mode .info-value {
+            color: #fff;
         }
 
-        .btn-modal {
-            padding: 10px 20px;
+        .badge-custom {
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .table {
+            background: white;
+        }
+
+        body.dark-mode .table {
+            background-color: #2d2d2d;
+            color: #eee;
+        }
+
+        body.dark-mode .table thead {
+            background-color: #333;
+        }
+
+        body.dark-mode .table tbody tr {
+            border-color: #444;
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #493bde;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
         }
 
-        .btn-success {
-            background: #28a745;
-            color: white;
+        .btn-primary:hover {
+            background: #6f42c1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(73, 59, 222, 0.4);
         }
 
-        .btn-success:hover {
-            background: #218838;
+        .section-title {
+            border-bottom: 3px solid #493bde;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            color: #493bde;
         }
 
-        .btn-cancel {
-            background: #6c757d;
-            color: white;
+        body.dark-mode .section-title {
+            color: #667eea;
         }
 
-        .btn-cancel:hover {
-            background: #5a6268;
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+
+        body.dark-mode .empty-state-icon {
+            color: #666;
         }
     </style>
 </head>
 
 <body>
-    <button id="theme-toggle" class="btn-theme">🌙</button>
+    <button class="theme-toggle" id="theme-toggle">🌙</button>
 
-    <div class="container">
-        @if (session('success'))
-            <div class="alert">
-                {{ session('success') }}
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container-lg">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="mb-2">
+                        <i class="fas fa-user-circle"></i> {{ $guardia->nombre }} {{ $guardia->apellido }}
+                    </h1>
+                    <p class="text-muted mb-0">Información y equipamiento asignado</p>
+                </div>
+                <div class="col-auto">
+                    <span class="badge badge-custom bg-primary">{{ $guardia->codigo_unico ?? 'N/A'}}</span>
+                </div>
             </div>
-        @endif
+        </div>
+    </div>
 
-        <!-- ID Único del Guardia -->
-        <div class="badge-id">ID: {{ $guardia->codigo_unico }}</div>
-
-        <h1>{{ $guardia->nombre }} {{ $guardia->apellido }}</h1>
-
+    <!-- Main Content -->
+    <div class="container-lg mb-5">
         <!-- Información del Guardia -->
-        <div class="info-box">
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="info-label">Tipo de Documento</span>
-                    <span class="info-value" style="text-transform: capitalize;">{{ $guardia->tipo_documento }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Número de Documento</span>
-                    <span class="info-value">{{ $guardia->cedula }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Turno</span>
-                    <span class="info-value">{{ $guardia->turno }}</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Registrado</span>
-                    <span class="info-value">{{ $guardia->created_at->format('d/m/Y H:i') }}</span>
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i> Información Personal
+                </h2>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Tipo de Documento</span>
+                        <span class="info-value" style="text-transform: capitalize;">
+                            <span class="badge bg-info text-dark">{{ $guardia->tipo_documento }}</span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Número de Documento</span>
+                        <span class="info-value"><code>{{ $guardia->cedula }}</code></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Turno</span>
+                        <span class="info-value">
+                            <span class="badge bg-warning text-dark">{{ $guardia->turno }}</span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Registrado</span>
+                        <span class="info-value">{{ $guardia->created_at->format('d/m/Y H:i') }}</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Equipamiento Asignado -->
-        <h2>Equipamiento Asignado</h2>
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="section-title">
+                    <i class="fas fa-shopping-cart"></i> Equipamiento Asignado
+                </h2>
 
-        @if ($guardia->items->count() > 0)
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nombre del Ítem</th>
-                        <th>Código del Inventario</th>
-                        <th>Asignado</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($guardia->items as $item)
-                        <tr>
-                            <td>{{ $item->inventarioItem->nombre ?? $item->nombre_item ?? 'N/A' }}</td>
-                            <td>{{ $item->inventarioItem->codigo_serie ?? $item->codigo_serie ?? 'N/A' }}</td>
-                            <td>{{ $item->created_at->format('d/m/Y') }}</td>
-                            <td>
-                                <form action="{{ route('items.destroy', $item->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px;"
-                                        onclick="return confirm('¿Remover este ítem? Volverá al inventario.')">
-                                        Remover
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            <button type="button" class="btn-agregar" id="btn-add-items">+ Agregar Items</button>
-        @else
-            <div class="no-items">
-                No hay equipamiento asignado a este guardia.
+                @if ($guardia->items->isEmpty())
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-box-open"></i>
+                        </div>
+                        <h4>Sin equipamiento asignado</h4>
+                        <p class="text-muted">Este guardia aún no tiene items asignados</p>
+                    </div>
+                @else
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th><i class="fas fa-box"></i> Nombre del Ítem</th>
+                                    <th><i class="fas fa-barcode"></i> Código de Serie</th>
+                                    <th class="text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($guardia->items as $item)
+                                    <tr>
+                                        <td><strong>{{ $item->nombre_item }}</strong></td>
+                                        <td><code>{{ $item->codigo_serie ?? 'N/A' }}</code></td>
+                                        <td class="text-center">
+                                            <form action="{{ route('items.destroy', $item->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('¿Deseas devolver este ítem al inventario?')" title="Eliminar">
+                                                    <i class="fas fa-trash"></i> Devolver
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
-            <button type="button" class="btn-agregar" id="btn-add-items">+ Agregar Items</button>
-        @endif
+        </div>
+
+        <!-- Agregar Nuevo Equipamiento -->
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="section-title">
+                    <i class="fas fa-plus-circle"></i> Agregar Equipamiento
+                </h2>
+
+                <form id="add-item-form" method="POST">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label for="inventario-select" class="form-label">
+                                <i class="fas fa-list"></i> Seleccionar Ítem del Inventario
+                            </label>
+                            <select id="inventario-select" class="form-select" required>
+                                <option value="">-- Selecciona un ítem --</option>
+                                @foreach(\App\Models\InventarioItem::where('cantidad', '>', 0)->get() as $item)
+                                    <option value="{{ $item->id }}">
+                                        {{ $item->nombre }} ({{ $item->cantidad }} disponible)
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-success w-100" id="add-item-btn">
+                                <i class="fas fa-plus"></i> Agregar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <!-- Botones de Acción -->
-        <div class="button-group">
-            <a href="{{ route('guardias.index') }}" class="btn-regresar">
-                ← Volver a la lista
+        <div class="d-grid gap-2 d-sm-flex">
+            <a href="{{ route('guardias.edit', $guardia->id) }}" class="btn btn-warning btn-lg text-dark">
+                <i class="fas fa-edit"></i> Editar Guardia
             </a>
-            <a href="{{ route('guardias.edit', $guardia->id) }}" class="btn-editar">
-                ✏️ Editar Guardia
+            <a href="{{ route('guardias.index') }}" class="btn btn-outline-secondary btn-lg">
+                <i class="fas fa-arrow-left"></i> Volver a la Lista
             </a>
             <form action="{{ route('guardias.destroy', $guardia->id) }}" method="POST" style="display:inline;">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn-eliminar"
-                    onclick="return confirm('¿Estás seguro de que deseas eliminar este guardia y su equipamiento?')">
-                    🗑️ Eliminar
+                <button type="submit" class="btn btn-danger btn-lg"
+                    onclick="return confirm('¿Seguro que deseas eliminar este guardia y su equipamiento?')">
+                    <i class="fas fa-trash"></i> Eliminar
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Modal para Agregar Items -->
-    <div class="modal-overlay" id="modal-agregar-items">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Agregar Items al Equipamiento</h3>
-                <button type="button" class="modal-close" id="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <label for="item-select" style="font-weight: bold; display: block; margin-bottom: 10px;">Selecciona un Ítem:</label>
-                <select id="item-select">
-                    <option value="">-- Selecciona un ítem disponible --</option>
-                    @php
-                        $inventoryItems = \App\Models\InventarioItem::where('cantidad', '>', 0)->get();
-                        $assignedItemIds = $guardia->items()->pluck('inventario_item_id')->toArray();
-                    @endphp
-                    @forelse($inventoryItems as $invItem)
-                        @if (!in_array($invItem->id, $assignedItemIds))
-                            <option value="{{ $invItem->id }}">{{ $invItem->nombre }} ({{ $invItem->cantidad }} disponibles)</option>
-                        @endif
-                    @empty
-                        <option value="" disabled>No hay items disponibles</option>
-                    @endforelse
-                </select>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-modal btn-cancel" id="modal-cancel">Cancelar</button>
-                <button type="button" class="btn-modal btn-success" id="modal-confirm">Agregar Item</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const btn = document.getElementById('theme-toggle');
         const body = document.body;
 
-        // Recuperar preferencia guardada
+        // Modo Oscuro
         if (localStorage.getItem('dark-mode') === 'enabled') {
             body.classList.add('dark-mode');
             btn.innerText = '☀️';
@@ -458,79 +350,47 @@
 
         btn.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
-
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('dark-mode', 'enabled');
-                btn.innerText = '☀️';
-            } else {
-                localStorage.setItem('dark-mode', 'disabled');
-                btn.innerText = '🌙';
-            }
+            const isDark = body.classList.contains('dark-mode');
+            localStorage.setItem('dark-mode', isDark ? 'enabled' : 'disabled');
+            btn.innerText = isDark ? '☀️' : '🌙';
         });
 
-        // Lógica del Modal para Agregar Items
-        const modalOverlay = document.getElementById('modal-agregar-items');
-        const btnAddItems = document.getElementById('btn-add-items');
-        const btnModalClose = document.getElementById('modal-close');
-        const btnCancel = document.getElementById('modal-cancel');
-        const btnConfirm = document.getElementById('modal-confirm');
-        const itemSelect = document.getElementById('item-select');
-
-        // Abrir modal
-        btnAddItems.addEventListener('click', () => {
-            itemSelect.value = '';
-            modalOverlay.classList.add('active');
-        });
-
-        // Cerrar modal
-        function closeModal() {
-            modalOverlay.classList.remove('active');
-        }
-
-        btnModalClose.addEventListener('click', closeModal);
-        btnCancel.addEventListener('click', closeModal);
-
-        // Cerrar modal al hacer clic en el overlay
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) {
-                closeModal();
-            }
-        });
-
-        // Confirmar agregar item
-        btnConfirm.addEventListener('click', () => {
-            const itemId = itemSelect.value;
+        // Agregar item
+        document.getElementById('add-item-btn').addEventListener('click', function() {
+            const select = document.getElementById('inventario-select');
+            const itemId = select.value;
 
             if (!itemId) {
                 alert('Por favor selecciona un ítem');
                 return;
             }
 
-            // Crear un formulario AJAX para agregar el item
-            const guardia_id = {{ $guardia->id }};
-
-            fetch(`/guardias/${guardia_id}/items`, {
+            // Enviar solicitud AJAX
+            fetch('{{ route("guardias.addItem", $guardia->id) }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify({
                     inventario_item_id: itemId
                 })
             })
-            .then(response => {
-                if (!response.ok) throw new Error('Error al agregar item');
-                // Recargar la página para ver los cambios
-                window.location.reload();
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('Error al agregar el item. Intenta de nuevo.');
+                alert('Error al agregar el ítem');
+                console.error(error);
             });
         });
     </script>
-
 </body>
 
 </html>

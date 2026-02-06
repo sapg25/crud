@@ -3,146 +3,252 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Editar Guardia - Tienda</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Editar Guardia</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-        }
-
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        button {
-            background-color: #ffc107;
-            color: black;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        button:hover {
-            background-color: #e0a800;
-        }
-
-        .btn-regresar {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px;
-            background: #6c757d;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .btn-theme {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            cursor: pointer;
-            background: #493bde;
-            color: white;
-            font-size: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body.dark-mode {
-            background-color: #1a1a1a;
-            color: #ffffff;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
         }
 
-        body.dark-mode .container {
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #493bde;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .page-header {
+            background: rgba(45, 45, 45, 0.95);
+            color: #fff;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .card {
             background-color: #2d2d2d;
-            color: #ffffff;
+            color: #fff;
+            border-color: #444;
         }
 
-        body.dark-mode input,
-        body.dark-mode select {
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #493bde;
+            box-shadow: 0 0 10px rgba(73, 59, 222, 0.3);
+        }
+
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
             background-color: #444;
             color: white;
-            border: 1px solid #666;
+            border-color: #666;
+        }
+
+        body.dark-mode .form-control:focus,
+        body.dark-mode .form-select:focus {
+            background-color: #555;
+            border-color: #493bde;
+        }
+
+        input[readonly] {
+            background-color: #e9ecef;
+            color: #333;
+            font-weight: 600;
+        }
+
+        body.dark-mode input[readonly] {
+            background-color: #555;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .section-title {
+            border-bottom: 3px solid #493bde;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            color: #493bde;
+        }
+
+        body.dark-mode .section-title {
+            color: #667eea;
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #493bde;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #6f42c1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(73, 59, 222, 0.4);
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        body.dark-mode .info-card {
+            background: #333;
+        }
+
+        .info-card strong {
+            color: #493bde;
+        }
+
+        body.dark-mode .info-card strong {
+            color: #667eea;
         }
     </style>
 </head>
 
 <body>
-    <button id="theme-toggle" class="btn-theme">🌙</button>
-    <div class="container">
-        <h1>Editar Datos del Guardia</h1>
+    <button class="theme-toggle" id="theme-toggle">🌙</button>
 
-        <form action="{{ route('guardias.update', $guardia->id) }}" method="POST">
-            @csrf
-            @method('PUT') <label>Nombre</label>
-            <input type="text" name="nombre" value="{{ $guardia->nombre }}" required>
-
-            <label>Apellido</label>
-            <input type="text" name="apellido" value="{{ $guardia->apellido }}" required>
-
-            <label>Cédula</label>
-            <input type="text" name="cedula" value="{{ $guardia->cedula }}" required>
-
-            <label>Turno Actual: {{ $guardia->turno }}</label>
-            <select name="turno">
-                <option value="Mañana" {{ $guardia->turno == 'Mañana' ? 'selected' : '' }}>Mañana</option>
-                <option value="Tarde" {{ $guardia->turno == 'Tarde' ? 'selected' : '' }}>Tarde</option>
-                <option value="Noche" {{ $guardia->turno == 'Noche' ? 'selected' : '' }}>Noche</option>
-            </select>
-
-            <button type="submit">Actualizar Información</button>
-        </form>
-
-        <a href="{{ route('guardias.index') }}" class="btn-regresar">
-            Cancelar y volver a la lista
-        </a>
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container-lg">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="mb-2">
+                        <i class="fas fa-edit"></i> Editar Guardia
+                    </h1>
+                    <p class="text-muted mb-0">Modifica los datos del guardia</p>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Main Content -->
+    <div class="container-lg mb-5" style="max-width: 600px;">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="section-title">
+                    <i class="fas fa-user-edit"></i> Datos del Guardia
+                </h2>
+
+                <div class="info-card">
+                    <strong><i class="fas fa-user"></i> Nombre:</strong> {{ $guardia->nombre }} {{ $guardia->apellido }}
+                </div>
+
+                <form action="{{ route('guardias.update', $guardia->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">
+                            <i class="fas fa-user"></i> Nombre
+                        </label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" 
+                            value="{{ $guardia->nombre }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="apellido" class="form-label">
+                            <i class="fas fa-user"></i> Apellido
+                        </label>
+                        <input type="text" class="form-control" id="apellido" name="apellido" 
+                            value="{{ $guardia->apellido }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="cedula" class="form-label">
+                            <i class="fas fa-id-card"></i> Cédula/Documento
+                        </label>
+                        <input type="text" class="form-control" id="cedula" name="cedula" 
+                            value="{{ $guardia->cedula }}" readonly>
+                        <small class="text-muted">Este campo no se puede modificar</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="turno" class="form-label">
+                            <i class="fas fa-clock"></i> Turno
+                        </label>
+                        <select name="turno" id="turno" class="form-select" required>
+                            <option value="Mañana" {{ $guardia->turno == 'Mañana' ? 'selected' : '' }}>Mañana</option>
+                            <option value="Tarde" {{ $guardia->turno == 'Tarde' ? 'selected' : '' }}>Tarde</option>
+                            <option value="Noche" {{ $guardia->turno == 'Noche' ? 'selected' : '' }}>Noche</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2 d-sm-flex">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Actualizar Información
+                        </button>
+                        <a href="{{ route('guardias.show', $guardia->id) }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const btn = document.getElementById('theme-toggle');
         const body = document.body;
 
-        // 1. Cargar preferencia guardada en el navegador
+        // Modo Oscuro
         if (localStorage.getItem('dark-mode') === 'enabled') {
             body.classList.add('dark-mode');
             btn.innerText = '☀️';
         }
 
-        // 2. Evento de clic para cambiar el tema
         btn.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
             const isDark = body.classList.contains('dark-mode');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Exceptions\GuardiaYaExisteException;
 
 class GuardiaController extends Controller
 {
@@ -35,6 +36,12 @@ class GuardiaController extends Controller
         'tipo_documento' => 'required',
         'items' => 'required|array|min:1'
     ]);
+
+    // Verificar si el guardia ya existe por cédula
+    $guardiaExistente = \App\Models\Guardia::where('cedula', $request->cedula)->first();
+    if ($guardiaExistente) {
+        throw new GuardiaYaExisteException($request->cedula);
+    }
 
     // Generamos un código único
     $codigoGenerado = 'G-' . strtoupper(substr(uniqid(), -5));
