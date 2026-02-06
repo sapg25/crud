@@ -10,6 +10,34 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Asegura que la columna de código no se mueva */
+#items-table td code {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    background-color: #f0f0f0; /* Fondo gris claro para modo claro */
+    color: #c7254e; /* Color rojizo clásico de code */
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+/* Ajuste para modo oscuro */
+body.dark-mode #items-table td code {
+    background-color: #444 !important;
+    color: #ff79c6 !important; /* Un color que resalte en oscuro */
+}
+        /* Añade esto a tu sección de style en show.blade.php */
+        body.dark-mode .page-header p.text-muted {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        /* También para el botón "Volver a la Lista" que mencionaste antes */
+        body.dark-mode .btn-outline-secondary {
+            color: #fff !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
@@ -64,13 +92,15 @@
             border-color: #444;
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border-radius: 8px;
             border: 2px solid #ddd;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: #493bde;
             box-shadow: 0 0 10px rgba(73, 59, 222, 0.3);
         }
@@ -201,6 +231,7 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -293,7 +324,7 @@
                                 <label for="nombre" class="form-label">
                                     <i class="fas fa-user"></i> Nombre
                                 </label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" 
+                                <input type="text" class="form-control" id="nombre" name="nombre"
                                     placeholder="Ej: Rafael" required value="{{ old('nombre') }}">
                             </div>
 
@@ -301,7 +332,7 @@
                                 <label for="apellido" class="form-label">
                                     <i class="fas fa-user"></i> Apellido
                                 </label>
-                                <input type="text" class="form-control" id="apellido" name="apellido" 
+                                <input type="text" class="form-control" id="apellido" name="apellido"
                                     placeholder="Ej: Bermeo" required value="{{ old('apellido') }}">
                             </div>
 
@@ -320,8 +351,9 @@
                                 <label for="cedula" class="form-label">
                                     <i class="fas fa-card-id"></i> Cédula/Documento
                                 </label>
-                                <input type="text" class="form-control" id="cedula" name="cedula" 
-                                    placeholder="Ej: 09XXXXXXXX" required value="{{ old('cedula') }}">
+                                <input type="text" class="form-control" id="cedula" name="cedula"
+                                    placeholder="Ej: 09XXXXXXXX" maxlength="10" required value="{{ old('cedula') }}"
+                                    onkeyup="validarDocumento(this)">
                                 <small class="text-muted">Solo números para cédula, alfanumérico para pasaporte</small>
                             </div>
 
@@ -360,10 +392,11 @@
                                 </label>
                                 <select id="inventario-select" class="form-select">
                                     <option value="">-- Selecciona un ítem --</option>
-                                    @foreach($inventarioItems as $item)
+                                    @foreach ($inventarioItems as $item)
                                         <option value="{{ $item->id }}">
-                                            {{ $item->nombre }} 
-                                            <span class="badge badge-custom bg-success">{{ $item->cantidad }} disponibles</span>
+                                            {{ $item->nombre }}
+                                            <span class="badge badge-custom bg-success">{{ $item->cantidad }}
+                                                disponibles</span>
                                         </option>
                                     @endforeach
                                 </select>
@@ -374,11 +407,12 @@
                             </button>
 
                             <div class="table-responsive">
-                                <table id="items-table" class="table table-sm table-hover mb-0" style="display: none;">
+                                <table id="items-table" class="table table-sm table-hover mb-0"
+                                    style="display: none;">
                                     <thead class="table-dark">
                                         <tr>
                                             <th><i class="fas fa-box"></i> Ítem</th>
-                                            <th><i class="fas fa-cubes"></i> Origen</th>
+                                            <th><i class="fas fa-barcode"></i> Código</th>
                                             <th class="text-center" style="width: 90px;">Acción</th>
                                         </tr>
                                     </thead>
@@ -427,16 +461,36 @@
 
         // Validar documento
         document.getElementById('tipo_documento').addEventListener('change', function() {
-            document.getElementById('cedula').value = '';
-            document.getElementById('cedula').placeholder = this.value === 'cedula' ? 'Ej: 09XXXXXXXX' : 'Ej: ABC12345';
+            const inputCedula = document.getElementById('cedula');
+            inputCedula.value = '';
+
+            if (this.value === 'cedula') {
+                inputCedula.placeholder = 'Ej: 09XXXXXXXX';
+                inputCedula.maxLength = '10';
+                inputCedula.title = 'Máximo 10 números';
+            } else {
+                inputCedula.placeholder = 'Ej: ABC12345';
+                inputCedula.maxLength = '30';
+                inputCedula.title = 'Máximo 30 caracteres';
+            }
         });
 
         function validarDocumento(input) {
             const tipoDoc = document.getElementById('tipo_documento').value;
             if (tipoDoc === 'cedula') {
+                // Solo números para cédula
                 input.value = input.value.replace(/[^0-9]/g, '');
+                // Limitar a 10 dígitos
+                if (input.value.length > 10) {
+                    input.value = input.value.substring(0, 10);
+                }
             } else {
+                // Alfanumérico para pasaporte
                 input.value = input.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                // Limitar a 30 caracteres
+                if (input.value.length > 30) {
+                    input.value = input.value.substring(0, 30);
+                }
             }
         }
 
@@ -448,7 +502,7 @@
                 const itemId = select.value;
                 const selectedOption = select.options[select.selectedIndex];
                 const itemText = selectedOption.text;
-                
+
                 // Extraer solo el nombre del item (quita el badge)
                 const nombre = itemText.split(/\s+disponible/)[0].trim();
 
@@ -471,15 +525,17 @@
             const table = document.getElementById('items-table');
             const tbody = document.getElementById('items-tbody');
 
-            items.push({ id: itemId, nombre: nombre });
+            items.push({
+                id: itemId,
+                nombre: nombre
+            });
             const rowIndex = items.length - 1;
 
             const row = document.createElement('tr');
-            row.style.color = '#fff'; // Asegurar que el texto sea blanco en modo oscuro
             row.innerHTML = `
-                <td style="color: #fff !important;"><strong>${nombre || 'Sin nombre'}</strong></td>
-                <td style="color: #fff !important;"><code>Del Inventario</code></td>
-                <td class="text-center" style="color: #fff !important;">
+                <td>${nombre}</td>
+                <td><code>Del Inventario</code></td>
+                <td class="text-center">
                     <button type="button" class="btn-delete btn btn-sm btn-danger" data-index="${rowIndex}">
                         <i class="fas fa-trash"></i> Eliminar
                     </button>
@@ -534,6 +590,8 @@
                 alert('Debe asignar al menos un ítem');
                 return false;
             }
+            // Actualizar inputs hidden justo antes de enviar
+            updateHiddenInputs();
         });
 
         // Limpiar formulario cuando se hace clic en reset (Cancelar)

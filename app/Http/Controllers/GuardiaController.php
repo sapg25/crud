@@ -29,28 +29,43 @@ class GuardiaController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    $request->validate([
-        'nombre' => 'required',
-        'cedula' => 'required|alpha_num|max:10',
-        'tipo_documento' => 'required',
-        'items' => 'required|array|min:1'
-    ]);
+    {
+        // Validación condicional según tipo de documento
+        $rules = [
+            'nombre' => 'required|string',
+            'apellido' => 'required|string',
+            'tipo_documento' => 'required|string',
+            'turno' => 'required|string',
+            'items' => 'required|array|min:1'
+        ];
 
-    // Verificar si el guardia ya existe por cédula
-    $guardiaExistente = \App\Models\Guardia::where('cedula', $request->cedula)->first();
-    if ($guardiaExistente) {
-        throw new GuardiaYaExisteException($request->cedula);
-    }
+        // Validar cedula según tipo de documento
+        if ($request->tipo_documento === 'cedula') {
+            $rules['cedula'] = 'required|numeric|max_digits:10|min_digits:8';
+        } else {
+            $rules['cedula'] = 'required|alpha_num|max:30';
+        }
 
-    // Generamos un código único
-    $codigoGenerado = 'G-' . strtoupper(substr(uniqid(), -5));
+        $request->validate($rules);
 
-    // Creamos el registro incluyendo el código
-    $data = $request->all();
-    $data['codigo_unico'] = $codigoGenerado;
+        // Verificar si el guardia ya existe por cédula
+        $guardiaExistente = \App\Models\Guardia::where('cedula', $request->cedula)->first();
+        if ($guardiaExistente) {
+            throw new GuardiaYaExisteException($request->cedula);
+        }
 
-    $guardia = \App\Models\Guardia::create($data);
+        // Generamos un código único
+        $codigoGenerado = 'G-' . strtoupper(substr(uniqid(), -5));
+
+        // Creamos el registro incluyendo el código
+        $guardia = \App\Models\Guardia::create([
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
+            'cedula' => $request->cedula,
+            'tipo_documento' => $request->tipo_documento,
+            'turno' => $request->turno,
+            'codigo_unico' => $codigoGenerado
+        ]);
 
     // Asignar items del inventario y restar cantidad
     if ($request->has('items')) {

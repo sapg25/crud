@@ -11,6 +11,17 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Añade esto a tu sección de style en show.blade.php */
+        body.dark-mode .page-header p.text-muted {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        /* También para el botón "Volver a la Lista" que mencionaste antes */
+        body.dark-mode .btn-outline-secondary {
+            color: #fff !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
@@ -194,7 +205,7 @@
                     <p class="text-muted mb-0">Información y equipamiento asignado</p>
                 </div>
                 <div class="col-auto">
-                    <span class="badge badge-custom bg-primary">{{ $guardia->codigo_unico ?? 'N/A'}}</span>
+                    <span class="badge badge-custom bg-primary">{{ $guardia->codigo_unico ?? 'N/A' }}</span>
                 </div>
             </div>
         </div>
@@ -208,7 +219,7 @@
                 <h2 class="section-title">
                     <i class="fas fa-info-circle"></i> Información Personal
                 </h2>
-                
+
                 <div class="info-grid">
                     <div class="info-item">
                         <span class="info-label">Tipo de Documento</span>
@@ -265,11 +276,13 @@
                                         <td><strong>{{ $item->nombre_item }}</strong></td>
                                         <td><code>{{ $item->codigo_serie ?? 'N/A' }}</code></td>
                                         <td class="text-center">
-                                            <form action="{{ route('items.destroy', $item->id) }}" method="POST" style="display:inline;">
+                                            <form action="{{ route('items.destroy', $item->id) }}" method="POST"
+                                                style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger"
-                                                    onclick="return confirm('¿Deseas devolver este ítem al inventario?')" title="Eliminar">
+                                                    onclick="return confirm('¿Deseas devolver este ítem al inventario?')"
+                                                    title="Eliminar">
                                                     <i class="fas fa-trash"></i> Devolver
                                                 </button>
                                             </form>
@@ -299,7 +312,7 @@
                             </label>
                             <select id="inventario-select" class="form-select" required>
                                 <option value="">-- Selecciona un ítem --</option>
-                                @foreach(\App\Models\InventarioItem::where('cantidad', '>', 0)->get() as $item)
+                                @foreach (\App\Models\InventarioItem::where('cantidad', '>', 0)->get() as $item)
                                     <option value="{{ $item->id }}">
                                         {{ $item->nombre }} ({{ $item->cantidad }} disponible)
                                     </option>
@@ -322,7 +335,7 @@
             <a href="{{ route('guardias.edit', $guardia->id) }}" class="btn btn-warning btn-lg text-dark">
                 <i class="fas fa-edit"></i> Editar Guardia
             </a>
-            <a href="{{ route('guardias.index') }}" class="btn btn-outline-secondary btn-lg">
+            <a href="{{ route('guardias.index') }}" class="btn btn-secondary btn-lg">
                 <i class="fas fa-arrow-left"></i> Volver a la Lista
             </a>
             <form action="{{ route('guardias.destroy', $guardia->id) }}" method="POST" style="display:inline;">
@@ -366,29 +379,30 @@
             }
 
             // Enviar solicitud AJAX
-            fetch('{{ route("guardias.addItem", $guardia->id) }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    inventario_item_id: itemId
+            fetch('{{ route('guardias.addItem', $guardia->id) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
+                    },
+                    body: JSON.stringify({
+                        inventario_item_id: itemId
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    window.location.reload();
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                alert('Error al agregar el ítem');
-                console.error(error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    alert('Error al agregar el ítem');
+                    console.error(error);
+                });
         });
     </script>
 </body>

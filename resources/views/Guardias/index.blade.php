@@ -10,6 +10,17 @@
     <!-- Font Awesome para iconos -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Añade esto a tu sección de style en show.blade.php */
+        body.dark-mode .page-header p.text-muted {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        /* También para el botón "Volver a la Lista" que mencionaste antes */
+        body.dark-mode .btn-outline-secondary {
+            color: #fff !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+
         :root {
             --primary-color: #493bde;
             --secondary-color: #6f42c1;
@@ -205,7 +216,7 @@
                 </a>
             </div>
             <div class="col-md-6">
-                <input type="text" id="search-input" class="form-control search-input btn-lg" 
+                <input type="text" id="search-input" class="form-control search-input btn-lg"
                     placeholder="🔍 Buscar por nombre, apellido, cédula o código...">
             </div>
         </div>
@@ -244,19 +255,21 @@
                                 </td>
                                 <td>
                                     <div class="action-buttons justify-content-center">
-                                        <a href="{{ route('guardias.show', $guardia->id) }}" 
-                                            class="btn btn-sm btn-info" title="Ver equipamiento">
+                                        <a href="{{ route('guardias.show', $guardia->id) }}" class="btn btn-sm btn-info"
+                                            title="Ver equipamiento">
                                             <i class="fas fa-eye"></i> Ver
                                         </a>
-                                        <a href="{{ route('guardias.edit', $guardia->id) }}" 
+                                        <a href="{{ route('guardias.edit', $guardia->id) }}"
                                             class="btn btn-sm btn-warning text-dark" title="Editar">
                                             <i class="fas fa-edit"></i> Editar
                                         </a>
-                                        <form action="{{ route('guardias.destroy', $guardia->id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ route('guardias.destroy', $guardia->id) }}" method="POST"
+                                            style="display:inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" 
-                                                onclick="return confirm('¿Seguro que deseas eliminar este guardia?')" title="Eliminar">
+                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('¿Seguro que deseas eliminar este guardia?')"
+                                                title="Eliminar">
                                                 <i class="fas fa-trash"></i> Eliminar
                                             </button>
                                         </form>
@@ -312,9 +325,9 @@
                 const cedula = row.cells[4].textContent.toLowerCase();
 
                 // Verificar si alguno coincide con el término de búsqueda
-                if (codigo.includes(searchTerm) || 
-                    nombre.includes(searchTerm) || 
-                    apellido.includes(searchTerm) || 
+                if (codigo.includes(searchTerm) ||
+                    nombre.includes(searchTerm) ||
+                    apellido.includes(searchTerm) ||
                     cedula.includes(searchTerm)) {
                     row.style.display = '';
                     visibleRows++;
@@ -329,7 +342,8 @@
                 if (!noResultsMsg) {
                     noResultsMsg = document.createElement('tr');
                     noResultsMsg.className = 'no-results';
-                    noResultsMsg.innerHTML = '<td colspan="7" class="no-results">No se encontraron guardias que coincidan con la búsqueda</td>';
+                    noResultsMsg.innerHTML =
+                        '<td colspan="7" class="no-results">No se encontraron guardias que coincidan con la búsqueda</td>';
                     tbody.appendChild(noResultsMsg);
                 }
                 noResultsMsg.style.display = '';

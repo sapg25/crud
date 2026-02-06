@@ -10,6 +10,17 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Añade esto a tu sección de style en show.blade.php */
+        body.dark-mode .page-header p.text-muted {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        /* También para el botón "Volver a la Lista" que mencionaste antes */
+        body.dark-mode .btn-outline-secondary {
+            color: #fff !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+        }
+
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
@@ -64,13 +75,15 @@
             border-color: #444;
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border-radius: 8px;
             border: 2px solid #ddd;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: #493bde;
             box-shadow: 0 0 10px rgba(73, 59, 222, 0.3);
         }
@@ -192,7 +205,7 @@
                         <label for="nombre" class="form-label">
                             <i class="fas fa-user"></i> Nombre
                         </label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" 
+                        <input type="text" class="form-control" id="nombre" name="nombre"
                             value="{{ $guardia->nombre }}" required>
                     </div>
 
@@ -200,7 +213,7 @@
                         <label for="apellido" class="form-label">
                             <i class="fas fa-user"></i> Apellido
                         </label>
-                        <input type="text" class="form-control" id="apellido" name="apellido" 
+                        <input type="text" class="form-control" id="apellido" name="apellido"
                             value="{{ $guardia->apellido }}" required>
                     </div>
 
@@ -208,7 +221,7 @@
                         <label for="cedula" class="form-label">
                             <i class="fas fa-id-card"></i> Cédula/Documento
                         </label>
-                        <input type="text" class="form-control" id="cedula" name="cedula" 
+                        <input type="text" class="form-control" id="cedula" name="cedula"
                             value="{{ $guardia->cedula }}" readonly>
                         <small class="text-muted">Este campo no se puede modificar</small>
                     </div>
