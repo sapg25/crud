@@ -10,23 +10,44 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Asegura que la columna de código no se mueva */
-#items-table td code {
-    display: inline-block;
-    width: 100%;
-    text-align: center;
-    background-color: #f0f0f0; /* Fondo gris claro para modo claro */
-    color: #c7254e; /* Color rojizo clásico de code */
-    padding: 2px 4px;
-    border-radius: 4px;
-    font-family: monospace;
-}
+        body.dark-mode .alert-success {
+            background-color: #1b4332;
+            color: #8fce00;
+            border: 1px solid #2d6a4f;
+        }
 
-/* Ajuste para modo oscuro */
-body.dark-mode #items-table td code {
-    background-color: #444 !important;
-    color: #ff79c6 !important; /* Un color que resalte en oscuro */
-}
+        body.dark-mode .alert-warning {
+            background-color: #332b00;
+            color: #ffe082;
+            border-color: #665200;
+        }
+
+        body.dark-mode .alert-warning .btn-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        /* Asegura que la columna de código no se mueva */
+        #items-table td code {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            background-color: #f0f0f0;
+            /* Fondo gris claro para modo claro */
+            color: #c7254e;
+            /* Color rojizo clásico de code */
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        /* Ajuste para modo oscuro */
+        body.dark-mode #items-table td code {
+            background-color: #444 !important;
+            color: #ff79c6 !important;
+            /* Un color que resalte en oscuro */
+        }
+
         /* Añade esto a tu sección de style en show.blade.php */
         body.dark-mode .page-header p.text-muted {
             color: rgba(255, 255, 255, 0.7) !important;
@@ -302,7 +323,23 @@ body.dark-mode #items-table td code {
                         <h2 class="section-title">
                             <i class="fas fa-info-circle"></i> Datos del Guardia
                         </h2>
-
+                        @if (session('reactivar_id'))
+                            <div class="alert alert-warning d-flex justify-content-between align-items-center shadow-sm"
+                                style="border-left: 5px solid #ffc107;">
+                                <div>
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>{{ session('warning') }}</strong>
+                                </div>
+                                <form action="{{ route('guardias.reactivar', session('reactivar_id')) }}" method="POST"
+                                    class="mb-0">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-warning btn-sm fw-bold">
+                                        SÍ, REACTIVAR AHORA
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
                         @if (session('success'))
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 <i class="fas fa-check-circle"></i> {{ session('success') }}

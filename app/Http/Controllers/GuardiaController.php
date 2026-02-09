@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Exceptions\GuardiaYaExisteException;
+use App\Models\Guardia;
 
 class GuardiaController extends Controller
 {
@@ -12,7 +13,9 @@ class GuardiaController extends Controller
      */
     public function index()
     {
-        $guardias = \App\Models\Guardia::all(); // Trae todos los guardias de la base_sapo
+        // Cambiamos all() por un filtro where
+        $guardias = \App\Models\Guardia::where('activo', true)->get();
+
         return view('guardias.index', compact('guardias'));
     }
 
@@ -30,7 +33,6 @@ class GuardiaController extends Controller
      */
     public function store(Request $request)
     {
-        // Validación condicional según tipo de documento
         $rules = [
             'nombre' => 'required|string',
             'apellido' => 'required|string',
@@ -39,7 +41,6 @@ class GuardiaController extends Controller
             'items' => 'required|array|min:1'
         ];
 
-        // Validar cedula según tipo de documento
         if ($request->tipo_documento === 'cedula') {
             $rules['cedula'] = 'required|numeric|max_digits:10|min_digits:8';
         } else {
@@ -48,46 +49,53 @@ class GuardiaController extends Controller
 
         $request->validate($rules);
 
-        // Verificar si el guardia ya existe por cédula
+        // BUSCAR SI EXISTE (ACTIVO O INACTIVO)
         $guardiaExistente = \App\Models\Guardia::where('cedula', $request->cedula)->first();
+
         if ($guardiaExistente) {
-            throw new GuardiaYaExisteException($request->cedula);
+            if ($guardiaExistente->activo) {
+                // Si está activo, lanzas tu excepción normal
+                throw new \App\Exceptions\GuardiaYaExisteException($request->cedula);
+            } else {
+                // Si está inactivo, regresas con el mensaje de reactivación
+                return redirect()->back()
+                    ->withInput()
+                    ->with('reactivar_id', $guardiaExistente->id)
+                    ->with('warning', 'El guardia con cédula ' . $request->cedula . ' está INACTIVO. ¿Deseas reactivarlo?');
+            }
         }
 
-        // Generamos un código único
+        // SI NO EXISTE, CONTINÚA TU LÓGICA NORMAL
         $codigoGenerado = 'G-' . strtoupper(substr(uniqid(), -5));
 
-        // Creamos el registro incluyendo el código
         $guardia = \App\Models\Guardia::create([
             'nombre' => $request->nombre,
             'apellido' => $request->apellido,
             'cedula' => $request->cedula,
             'tipo_documento' => $request->tipo_documento,
             'turno' => $request->turno,
-            'codigo_unico' => $codigoGenerado
+            'codigo_unico' => $codigoGenerado,
+            'activo' => true // Aseguramos que inicie activo
         ]);
 
-    // Asignar items del inventario y restar cantidad
-    if ($request->has('items')) {
-        foreach ($request->items as $inventarioItemId) {
-            if (!empty($inventarioItemId)) {
-                $inventarioItem = \App\Models\InventarioItem::find($inventarioItemId);
-                if ($inventarioItem && $inventarioItem->cantidad > 0) {
-                    // Crear asignación
-                    $guardia->items()->create([
-                        'inventario_item_id' => $inventarioItemId,
-                        'nombre_item' => $inventarioItem->nombre,
-                        'codigo_serie' => $inventarioItem->codigo_serie
-                    ]);
-                    // Restar del inventario
-                    $inventarioItem->decrement('cantidad');
+        if ($request->has('items')) {
+            foreach ($request->items as $inventarioItemId) {
+                if (!empty($inventarioItemId)) {
+                    $inventarioItem = \App\Models\InventarioItem::find($inventarioItemId);
+                    if ($inventarioItem && $inventarioItem->cantidad > 0) {
+                        $guardia->items()->create([
+                            'inventario_item_id' => $inventarioItemId,
+                            'nombre_item' => $inventarioItem->nombre,
+                            'codigo_serie' => $inventarioItem->codigo_serie
+                        ]);
+                        $inventarioItem->decrement('cantidad');
+                    }
                 }
             }
         }
-    }
 
-    return redirect()->route('guardias.create')->with('success', '✅ ¡Guardia guardado con código: ' . $codigoGenerado);
-}
+        return redirect()->route('guardias.create')->with('success', '✅ ¡Guardia guardado con código: ' . $codigoGenerado);
+    }
 
     /**
      * Display the specified resource.
@@ -127,19 +135,22 @@ class GuardiaController extends Controller
      */
     public function destroy($id)
     {
-        $guardia = \App\Models\Guardia::find($id);
+        $guardia = Guardia::findOrFail($id);
 
-        // Devolver items al inventario
+        // Cambiar estado a inactivo
+        $guardia->activo = false;
+        $guardia->save();
+
+        // Opcional: Devolver items al inventario al desactivarlo
         foreach ($guardia->items as $item) {
             if ($item->inventarioItem) {
                 $item->inventarioItem->increment('cantidad');
             }
+            // Borramos la relación de items porque ya no los tiene al estar inactivo
+            $item->delete();
         }
 
-        // Eliminar el guardia (y sus items por cascada)
-        $guardia->delete();
-
-        return redirect()->route('guardias.index')->with('success', 'Guardia y su equipamiento eliminado correctamente');
+        return redirect()->route('guardias.index')->with('success', 'Guardia marcado como INACTIVO y equipo devuelto.');
     }
 
     /**
@@ -147,7 +158,7 @@ class GuardiaController extends Controller
      */
     public function addItem(Request $request, $id)
     {
-        $guardia = \App\Models\Guardia::findOrFail($id);
+        $guardia = Guardia::findOrFail($id);
         $inventarioItemId = $request->input('inventario_item_id');
 
         // Validar que el item exista y tenga cantidad disponible
@@ -181,4 +192,17 @@ class GuardiaController extends Controller
             'message' => 'Item agregado correctamente'
         ]);
     }
+    /**
+     * Reactiva un guardia que estaba inactivo.
+     */
+    public function reactivar(Request $request, $id)
+{
+    $guardia = Guardia::findOrFail($id);
+    $guardia->activo = true;
+    $guardia->save();
+
+    // Cambiamos el redireccionamiento para que se quede en el formulario
+    return redirect()->route('guardias.create')
+        ->with('success', '✅ El guardia ' . $guardia->nombre . ' ' . $guardia->apellido . ' ha sido reactivado exitosamente.');
+}
 }

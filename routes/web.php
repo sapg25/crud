@@ -4,14 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GuardiaController;
 use App\Http\Controllers\ItemController;
 
-// Esta es la ÚNICA línea que necesitas para todo el CRUD
+// 1. RUTA DE REACTIVACIÓN (Debe ir ANTES del resource)
+Route::patch('guardias/{id}/reactivar', [GuardiaController::class, 'reactivar'])->name('guardias.reactivar');
+
+// 2. Rutas del CRUD estándar
 Route::resource('guardias', GuardiaController::class);
 
-// Ruta para agregar items a un guardia existente
+// 3. Rutas adicionales de Items
 Route::post('guardias/{guardia}/items', [GuardiaController::class, 'addItem'])->name('guardias.addItem');
-
-// Ruta para eliminar items individuales
 Route::delete('items/{id}', [ItemController::class, 'destroy'])->name('items.destroy');
 
-// Si quieres que al entrar a la página principal se vea la lista
+// Ruta principal
 Route::get('/', [GuardiaController::class, 'create']);
